@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.core.database import get_session, engine, Base
+from app.api.v1.endpoints.auth import router
 
 app = FastAPI(
     title="Measurment Service",
@@ -18,6 +19,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(router=router)
 
 
 @app.get("/health")
