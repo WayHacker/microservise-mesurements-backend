@@ -1,8 +1,9 @@
-from fastapi import APIRouter
-
-from app.schemas.auth import PhoneRequest
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.schemas.auth import PhoneRequest, CodeVerifyRequest, TokenResponse
 from app.schemas.common import ResponseWrapper
-from app.services.auth_service import generate_code
+from app.core.database import get_session
+from app.services.auth_service import generate_code, verify_and_auth
 
 router = APIRouter(prefix="/api/v1/auth", tags=["auth"])
 
@@ -12,3 +13,20 @@ async def requst_code(request: PhoneRequest):
     generate_code(request.phone)
 
     return ResponseWrapper(success=True, data=None, error=None)
+
+
+@router.post("/api/v1/verify-code")
+async def verify_code(
+    request: CodeVerifyRequest, db: AsyncSession = Depends(get_session)
+):
+    tokens = await verify_and_auth(request.phone, request.code, db)
+
+    if tokens is None:
+        raise HTTPException(status_code=400, detail="Invalid code")
+
+    return ResponseWrapper(
+        success=True,
+        data=TokenResponse(
+            access_token=tokens["access_token"], refresh_token=tokens["refresh_token"]
+        ),
+    )
