@@ -9,7 +9,7 @@ class RefreshToken(Base):
     __tablename__ = "refresh_tokens"
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     user_id: Mapped[int] = mapped_column(
-        BigInteger, ForeignKey("users.id", ondelete="CASCADE"), unique=True
+        BigInteger, ForeignKey("users.id", ondelete="CASCADE")
     )
     token: Mapped[str] = mapped_column(
         String(500), unique=True, nullable=False, index=True
