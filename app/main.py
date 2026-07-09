@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from app.core.database import get_session, engine, Base
 from app.api.v1.endpoints.auth import router
@@ -9,7 +9,7 @@ from app.api.deps import get_current_user
 from app.schemas.common import ResponseWrapper
 
 app = FastAPI(
-    title="Measurment Service",
+    title="Measurement Service",
     description="Микросервис для хранения мерок пользователей",
     version="0.1.0",
 )
@@ -32,7 +32,7 @@ async def health():
 
 
 @app.get("/health/db-test")
-async def check_db_connection(session: Session = Depends(get_session)):
+async def check_db_connection(session: AsyncSession = Depends(get_session)):
     try:
         result = await session.execute(text("SELECT 1"))
         value = result.scalar()
