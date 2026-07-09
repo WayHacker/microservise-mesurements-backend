@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.refresh_token import RefreshToken
 from app.models.user import User
-from app.core.security import create_access_token, create_refresh_token
+from app.core.security import create_access_token, create_refresh_token, verify_token
 from app.core.config import settings
 
 temp_codes = {}
@@ -55,3 +55,43 @@ async def verify_and_auth(phone: str, code: str, db: AsyncSession):
     await db.commit()
 
     return {"access_token": access_token, "refresh_token": refresh_token}
+
+
+async def refresh_tokens(refresh_token_str: str, db: AsyncSession) -> dict | None:
+    payload = verify_token(refresh_token_str)
+    if not payload or payload.get("type") != "refresh":
+        return None
+    query = select(RefreshToken).where(
+        RefreshToken.token == refresh_token_str,
+        RefreshToken.revoked == False,
+        RefreshToken.expires_at > datetime.utcnow(),
+    )
+    result = await db.execute(query)
+    old_token = result.scalar_one_or_none()
+
+    if not old_token:
+        return None
+
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        return None
+    
+    user_id = int(user_id_str)
+
+    new_access_token = create_access_token(user_id)
+    new_refresh_token_str = create_refresh_token(user_id)
+    old_token.revoked = True
+
+    new_refresh_token = RefreshToken(
+        token=new_refresh_token_str,
+        user_id=user_id,
+        expires_at=datetime.utcnow()
+        + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS),
+    )
+
+    db.add(new_refresh_token)
+    await db.commit()
+    return {
+        "access_token":new_access_token,
+        "refresh_token":new_refresh_token_str
+    }
