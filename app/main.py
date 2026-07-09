@@ -1,9 +1,12 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.core.database import get_session, engine, Base
 from app.api.v1.endpoints.auth import router
+from app.api.deps import get_current_user
+from app.schemas.common import ResponseWrapper
 
 app = FastAPI(
     title="Measurment Service",
@@ -36,3 +39,20 @@ async def check_db_connection(session: Session = Depends(get_session)):
         return {"status": "ok", "database": "connected", "test_query": f"{value}"}
     except Exception as e:
         return {"status": "error", "database": "diconnected", "error": str(e)}
+
+
+@app.get("/api/v1/me")
+async def get_me(user_id: int = Depends(get_current_user)):
+    return {"user_id": user_id}
+
+
+@app.exception_handler(HTTPException)
+async def http_expception_handler(request: Request, exc: HTTPException):
+    return JSONResponse(
+        status_code=exc.status_code,
+        content=ResponseWrapper(
+            success=False,
+            data=None,
+            error={"code": exc.status_code, "message": exc.detail},
+        ).model_dump(),
+    )
