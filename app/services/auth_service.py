@@ -75,7 +75,7 @@ async def refresh_tokens(refresh_token_str: str, db: AsyncSession) -> dict | Non
     user_id_str = payload.get("sub")
     if not user_id_str:
         return None
-    
+
     user_id = int(user_id_str)
 
     new_access_token = create_access_token(user_id)
@@ -91,7 +91,4 @@ async def refresh_tokens(refresh_token_str: str, db: AsyncSession) -> dict | Non
 
     db.add(new_refresh_token)
     await db.commit()
-    return {
-        "access_token":new_access_token,
-        "refresh_token":new_refresh_token_str
-    }
+    return {"access_token": new_access_token, "refresh_token": new_refresh_token_str}
