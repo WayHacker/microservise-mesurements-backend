@@ -52,7 +52,8 @@ async def update_measurement(
     if not measurement:
         return None
 
-    for key, value in data.items():
+    update_data = data.model_dump(exclude_unset=True)
+    for key, value in update_data.items():
         setattr(measurement, key, value)
     measurement.updated_at = datetime.now(timezone.utc)
     await db.commit()
