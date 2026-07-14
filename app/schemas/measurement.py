@@ -1,5 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, Field
+from uuid import UUID
+from pydantic import BaseModel, Field, ConfigDict, field_validator
 
 
 class MeasurementCreate(BaseModel):
@@ -9,7 +10,7 @@ class MeasurementCreate(BaseModel):
     waist: int | None = Field(None, gt=0)
     hips: int | None = Field(None, gt=0)
     shoulder_width: int | None = Field(None, gt=0)
-    sleeve_length: int | None = Field(None, gt=0)
+    sleeve_lenght: int | None = Field(None, gt=0)
     inseam: int | None = Field(None, gt=0)
 
 
@@ -39,6 +40,14 @@ class MeasurementResponse(BaseModel):
     shoulder_width: int | None = Field(None, gt=0)
     sleeve_length: int | None = Field(None, gt=0)
     inseam: int | None = Field(None, gt=0)
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_validator("share_token", mode="before")
+    @classmethod
+    def convert_uuid_to_str(cls, v):
+        if isinstance(v, UUID):
+            return str(v)
+        return v
 
 
 class MeasurementListResponse(BaseModel):
