@@ -6,6 +6,7 @@ from sqlalchemy import text
 from app.core.database import get_session, engine, Base
 from app.api.v1.endpoints.auth import router as auth_router
 from app.api.v1.endpoints.profile import router as profile_router
+from app.api.v1.endpoints.measurements import router as measurement_router
 from app.api.deps import get_current_user
 from app.schemas.common import ResponseWrapper
 
@@ -26,6 +27,7 @@ app.add_middleware(
 
 app.include_router(router=auth_router)
 app.include_router(router=profile_router)
+app.include_router(router=measurement_router)
 
 
 @app.get("/health")
