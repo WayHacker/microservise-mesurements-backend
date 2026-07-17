@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+#TODO: Add phone validation
 
 class PhoneRequest(BaseModel):
     phone: str

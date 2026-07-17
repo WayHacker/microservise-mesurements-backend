@@ -84,6 +84,6 @@ async def delete_user_measurement(
 ):
     result = await delete_measurement(measurement_id, user_id, db)
     if result is False:
-        return HTTPException(status_code=404, detail="Measurement not found")
+        raise HTTPException(status_code=404, detail="Measurement not found")
 
     return ResponseWrapper(success=True, data=None, error=None)

@@ -74,8 +74,7 @@ async def delete_measurement(
     )
     result = await db.execute(stmt)
     measurement = result.scalar_one_or_none()
-
-    if not measurement:
+    if measurement is None:
         return False
 
     measurement.is_deleted = True
