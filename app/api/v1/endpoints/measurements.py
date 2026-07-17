@@ -21,9 +21,13 @@ router = APIRouter(prefix="/api/v1/measurements", tags=["measurements"])
 
 @router.get("/api/v1/measurements")
 async def get_user_measurements(
-    user_id: int = Depends(get_current_user), db: AsyncSession = Depends(get_session)
+    limit: int = 100,
+    offset: int = 0,
+    user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
 ):
-    measurements = await get_measurements(user_id, db)
+
+    measurements = await get_measurements(user_id, db, limit=limit, offset=offset)
     return ResponseWrapper(
         success=True,
         data=[MeasurementResponse.model_validate(m) for m in measurements],

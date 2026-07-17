@@ -5,11 +5,15 @@ from app.models.measurement import Measurement
 from app.schemas.measurement import MeasurementUpdate, MeasurementCreate
 
 
-async def get_measurements(user_id: int, db: AsyncSession) -> list[Measurement]:
+async def get_measurements(
+    user_id: int, db: AsyncSession, limit: int = 100, offset: int = 0
+) -> list[Measurement]:
     stmt = (
         select(Measurement)
         .where(Measurement.user_id == user_id, Measurement.is_deleted == False)
         .order_by(Measurement.created_at)
+        .limit(limit)
+        .offset(offset)
     )
     result = await db.execute(stmt)
     measurements = result.scalars().all()
