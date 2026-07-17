@@ -13,6 +13,7 @@ from app.services.measurement_service import (
     get_measurement,
     update_measurement,
     delete_measurement,
+    share_measurement,
 )
 from app.schemas.common import ResponseWrapper
 
@@ -87,3 +88,15 @@ async def delete_user_measurement(
         raise HTTPException(status_code=404, detail="Measurement not found")
 
     return ResponseWrapper(success=True, data=None, error=None)
+
+
+@router.post("/api/v1/measurements/{measurement_id}/share")
+async def share_user_measurement(
+    measurement_id: int,
+    user_id: int = Depends(get_current_user),
+    db: AsyncSession = Depends(get_session),
+):
+    result = await share_measurement(measurement_id, user_id, db)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Measurement not found")
+    return ResponseWrapper(success=True, data={"share_url": f"/api/v1/shared/{result}"})

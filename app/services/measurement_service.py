@@ -81,3 +81,35 @@ async def delete_measurement(
     measurement.updated_at = datetime.now(timezone.utc)
     await db.commit()
     return True
+
+
+async def share_measurement(
+    measurement_id: int, user_id: int, db: AsyncSession
+) -> str | None:
+    stmt = select(Measurement).where(
+        Measurement.user_id == user_id,
+        Measurement.id == measurement_id,
+        Measurement.is_deleted == False,
+    )
+    result = await db.execute(stmt)
+    measurement = result.scalar_one_or_none()
+    if measurement is None:
+        return None
+    measurement.is_public = True
+    await db.commit()
+    return measurement.share_token
+
+
+async def get_public_measurement(
+    share_token: str, db: AsyncSession
+) -> Measurement | None:
+    stmt = select(Measurement).where(
+        Measurement.share_token == share_token,
+        Measurement.is_public == True,
+        Measurement.is_deleted == False,
+    )
+    result = await db.execute(stmt)
+    measurement = result.scalar_one_or_none()
+    if measurement is None:
+        return None
+    return measurement

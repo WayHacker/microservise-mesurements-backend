@@ -52,3 +52,17 @@ class MeasurementResponse(BaseModel):
 
 class MeasurementListResponse(BaseModel):
     measurements: list[MeasurementResponse]
+
+
+class MeasurementPublicRespone(BaseModel):
+    created_at: datetime
+    updated_at: datetime
+    name: str
+    height: int | None = Field(None, gt=0)
+    chest: int | None = Field(None, gt=0)
+    waist: int | None = Field(None, gt=0)
+    hips: int | None = Field(None, gt=0)
+    shoulder_width: int | None = Field(None, gt=0)
+    sleeve_length: int | None = Field(None, gt=0)
+    inseam: int | None = Field(None, gt=0)
+    model_config = ConfigDict(from_attributes=True)
