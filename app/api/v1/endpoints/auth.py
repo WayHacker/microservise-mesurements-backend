@@ -45,6 +45,9 @@ async def refresh(request: RefreshRequest, db: AsyncSession = Depends(get_sessio
 
     return ResponseWrapper(
         success=True,
-        access_token=tokens["access_token"],
-        refresh_token=tokens["refresh_token"],
+        data={
+            "access_token": tokens["access_token"],
+            "refresh_token": tokens["refresh_token"],
+        },
+        error=None,
     )
