@@ -13,11 +13,20 @@
 - JWT
 
 
----
+## Quickstart
+```bash
+docker compose up --build
+```
+Swagger - `http://localhost:8000/docs`
 
+Получить код для входа: 
+```bash
+docker compose logs backend | grep Code
+```
+---
 ## API Эндпоинты
 
-
+Базовый URL: `http://localhost:8000/api/v1`
 
 ### Формат ответа
 
@@ -74,6 +83,23 @@
 | GET | `/measurements/{id}` | Bearer | Получить один набор |
 | PUT | `/measurements/{id}` | Bearer | Обновить набор |
 | DELETE | `/measurements/{id}` | Bearer | Удалить набор |
-
+| POST | `/measurements/{id}/share` | Bearer | Сделать набор публичным |
 
 ---
+
+### Публичный доступ
+
+| Метод | URL | Защита | Описание |
+|---|---|---|---|
+| GET | `/shared/{token}` | Нет | Просмотр мерок по ссылке |
+
+---
+
+## Тесты
+
+```bash
+# Создать тестовую базу
+docker compose exec db psql -U postgres -c "CREATE DATABASE measurements_test;"
+
+# Запустить тесты
+pytest -v
