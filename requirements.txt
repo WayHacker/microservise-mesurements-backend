@@ -21,8 +21,8 @@ packaging==26.2
 pathspec==1.1.1
 platformdirs==4.10.0
 pluggy==1.6.0
-psycopg2==2.9.12
 pyasn1==0.6.3
+psycopg2-binary==2.9.10
 pydantic==2.13.4
 pydantic-settings==2.14.2
 pydantic_core==2.46.4
