@@ -16,7 +16,7 @@ from app.services.profile_service import get_profile, upsert_profile
 router = APIRouter(prefix="/api/v1/profile", tags=["profile"])
 
 
-@router.get("/api/v1/profile")
+@router.get("")
 async def get_current_profile(
     user_id: int = Depends(get_current_user), db: AsyncSession = Depends(get_session)
 ):
@@ -37,7 +37,7 @@ async def get_current_profile(
     )
 
 
-@router.put("/api/v1/profile")
+@router.put("")
 async def update_profile(
     data: ProfileUpdate,
     user_id: int = Depends(get_current_user),

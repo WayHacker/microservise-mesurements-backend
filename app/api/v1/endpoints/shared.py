@@ -8,7 +8,7 @@ from app.schemas.common import ResponseWrapper
 router = APIRouter(prefix="/api/v1/shared", tags=["shared"])
 
 
-@router.get("/api/v1/shared/{share_token}")
+@router.get("/{share_token}")
 async def get_user_public_measurement(
     share_token: str, db: AsyncSession = Depends(get_session)
 ):

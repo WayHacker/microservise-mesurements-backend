@@ -20,7 +20,7 @@ from app.schemas.common import ResponseWrapper
 router = APIRouter(prefix="/api/v1/measurements", tags=["measurements"])
 
 
-@router.get("/api/v1/measurements")
+@router.get("")
 async def get_user_measurements(
     limit: int = 100,
     offset: int = 0,
@@ -36,7 +36,7 @@ async def get_user_measurements(
     )
 
 
-@router.post("/api/v1/measurements", status_code=201)
+@router.post("", status_code=201)
 async def create_user_measurement(
     data: MeasurementCreate,
     user_id: int = Depends(get_current_user),
@@ -48,7 +48,7 @@ async def create_user_measurement(
     )
 
 
-@router.get("/api/v1/measurements/{measurement_id}")
+@router.get("/{measurement_id}")
 async def get_user_measurement(
     measurement_id: int,
     user_id: int = Depends(get_current_user),
@@ -56,13 +56,13 @@ async def get_user_measurement(
 ):
     measurement = await get_measurement(measurement_id, user_id, db)
     if measurement is None:
-        return HTTPException(status_code=404, detail="Measurement not found")
+        raise HTTPException(status_code=404, detail="Measurement not found")
     return ResponseWrapper(
         success=True, data=MeasurementResponse.model_validate(measurement), error=None
     )
 
 
-@router.put("/api/v1/measurement/{measurement_id}")
+@router.put("/{measurement_id}")
 async def update_user_measurement(
     measurement_id: int,
     data: MeasurementUpdate,
@@ -77,7 +77,7 @@ async def update_user_measurement(
     )
 
 
-@router.delete("/api/v1/measurements/{measurement_id}", status_code=204)
+@router.delete("/{measurement_id}", status_code=204)
 async def delete_user_measurement(
     measurement_id: int,
     user_id: int = Depends(get_current_user),
@@ -90,7 +90,7 @@ async def delete_user_measurement(
     return ResponseWrapper(success=True, data=None, error=None)
 
 
-@router.post("/api/v1/measurements/{measurement_id}/share")
+@router.post("/{measurement_id}/share")
 async def share_user_measurement(
     measurement_id: int,
     user_id: int = Depends(get_current_user),
