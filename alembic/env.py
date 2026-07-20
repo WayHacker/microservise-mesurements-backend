@@ -1,4 +1,5 @@
 import sys
+import os
 from os.path import abspath, dirname
 
 from logging.config import fileConfig
@@ -17,7 +18,10 @@ from app.models import User, Measurement, Profile, RefreshToken
 
 
 config = context.config
-
+alembic_url = os.getenv(
+    "ALEMBIC_URL", "postgresql://postgres:postgres@localhost:5433/measurements"
+)
+config.set_main_option("sqlalchemy.url", alembic_url)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:

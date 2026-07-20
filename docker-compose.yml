@@ -23,6 +23,7 @@ services:
       - db
       - redis
     environment:
+      ALEMBIC_URL: postgresql://postgres:postgres@db:5432/measurements
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/measurements
       JWT_SECRET: ${JWT_SECRET}
       JWT_ALGORITHM: HS256
