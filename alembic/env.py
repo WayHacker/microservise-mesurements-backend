@@ -18,9 +18,7 @@ from app.models import User, Measurement, Profile, RefreshToken
 
 
 config = context.config
-alembic_url = os.getenv(
-    "ALEMBIC_URL", "postgresql://postgres:postgres@localhost:5433/measurements"
-)
+alembic_url = os.getenv("ALEMBIC_URL", "postgresql://postgres:postgres@127.0.0.1:5432/measurements")
 config.set_main_option("sqlalchemy.url", alembic_url)
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

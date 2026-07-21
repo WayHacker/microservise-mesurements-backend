@@ -5,7 +5,7 @@ from app.core.database import Base, get_session
 from app.main import app
 
 TEST_DATABASE_URL = (
-    "postgresql+asyncpg://postgres:postgres@localhost:5433/measurements_test"
+    "postgresql+asyncpg://postgres:postgres@localhost:5432/measurements_test"
 )
 
 
