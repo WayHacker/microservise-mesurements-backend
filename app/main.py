@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
@@ -31,6 +32,7 @@ app.include_router(router=profile_router)
 app.include_router(router=measurement_router)
 app.include_router(router=share_router)
 
+
 @app.get("/health")
 async def health():
     return {"status": "ok"}
@@ -59,5 +61,25 @@ async def http_expception_handler(request: Request, exc: HTTPException):
             success=False,
             data=None,
             error={"code": exc.status_code, "message": exc.detail},
+        ).model_dump(),
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    errors = []
+    for error in exc.errors():
+        errors.append(
+            {
+                "field": " -> ".join(str(loc) for loc in error["loc"]),
+                "message": error["msg"],
+            }
+        )
+    return JSONResponse(
+        status_code=422,
+        content=ResponseWrapper(
+            success=False,
+            data=None,
+            error={"code": 422, "message": "Validation error", "details": errors},
         ).model_dump(),
     )
