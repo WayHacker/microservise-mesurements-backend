@@ -11,6 +11,7 @@ from app.api.v1.endpoints.measurements import router as measurement_router
 from app.api.v1.endpoints.shared import router as share_router
 from app.api.deps import get_current_user
 from app.schemas.common import ResponseWrapper
+from app.admin import setup_admin
 
 app = FastAPI(
     title="Measurement Service",
@@ -31,6 +32,8 @@ app.include_router(router=auth_router)
 app.include_router(router=profile_router)
 app.include_router(router=measurement_router)
 app.include_router(router=share_router)
+
+admin = setup_admin(app)
 
 
 @app.get("/health")
